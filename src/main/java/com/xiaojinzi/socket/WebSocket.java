@@ -3,6 +3,7 @@ package com.xiaojinzi.socket;
 
 import com.xiaojinzi.bean.MessageBean;
 import org.json.JSONObject;
+import org.springframework.stereotype.Component;
 
 import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
@@ -17,19 +18,9 @@ import java.util.concurrent.CopyOnWriteArraySet;
  * @ServerEndpoint 注解是一个类层次的注解，它的功能主要是将目前的类定义成一个websocket服务器端,
  * 注解的值将被用于监听用户连接的终端访问URL地址,客户端可以通过这个URL来连接到WebSocket服务器端
  */
-@ServerEndpoint("/websocket")
+@Component
+@ServerEndpoint("/networkConsume")
 public class WebSocket {
-
-    public WebSocket() {
-
-        try {
-            ServerLog.getLog();
-        } catch (Exception e) {
-        }
-
-        System.out.println("init WebSocket");
-
-    }
 
     /**
      * 收到客户端消息后调用的方法
@@ -50,7 +41,7 @@ public class WebSocket {
             if (MessageBean.TARRGET_SERVER.equals(targetTag)) { // 如果是和服务器交互的
 
             } else { // 其他的都是和客户端交互的
-                ServerLog.getLog().sendMessageToApp(selfTag,targetTag, jb.toString());
+                // ServerLog.getLog().sendMessageToApp(selfTag,targetTag, jb.toString());
             }
 
         } catch (Exception ignore) {
@@ -75,7 +66,7 @@ public class WebSocket {
         mSession = session;
         sessions.add(session);
         webSocketSet.add(this);
-        ServerLog.getLog().sendDeviceListToClient();
+        // ServerLog.getLog().sendDeviceListToClient();
     }
 
     /**
@@ -91,15 +82,10 @@ public class WebSocket {
 
     /**
      * 这个方法与上面几个方法不一样。没有用注解，是根据自己需要添加的方法。
-     *
-     * @param target
-     * @param message
-     * @throws IOException
      */
     public static synchronized void sendMessage(String target, String message) {
 
         try {
-
             for (int i = sessions.size() - 1; i >= 0; i--) {
                 Session session = sessions.get(i);
                 boolean isSend = false;
@@ -108,17 +94,14 @@ public class WebSocket {
                 } else if (String.valueOf(session.hashCode()).equals(target)) {
                     isSend = true;
                 }
-
                 if (!isSend) {
                     continue;
                 }
-
                 try {
                     session.getBasicRemote().sendText(message);
                 } catch (Exception e) {
                     sessions.remove(session);
                 }
-
             }
 
         } catch (Exception ignore) {

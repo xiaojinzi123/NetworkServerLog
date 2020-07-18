@@ -35,7 +35,6 @@ public class MessageBean<T> {
     public static final String TARRGET_SERVER = "serverTarget";
 
     // 表示弹出一个信息的确定框
-    public static final String ACTON_MSGBOX = "msgbox";
     public static final String ACTON_ADD_DEVICE = "addDeviceTag";
 
     // 表示其他端发送给哪一端
@@ -89,13 +88,6 @@ public class MessageBean<T> {
 
     public void setData(T data) {
         this.data = data;
-    }
-
-    public static MessageBean createMsgBoxBean(String message) {
-        MessageBean bean = new MessageBean();
-        bean.setAction(MessageBean.ACTON_MSGBOX);
-        bean.setData(message);
-        return bean;
     }
 
 }

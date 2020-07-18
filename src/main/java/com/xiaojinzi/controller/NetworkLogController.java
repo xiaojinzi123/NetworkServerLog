@@ -3,9 +3,9 @@ package com.xiaojinzi.controller;
 
 import com.google.gson.Gson;
 import com.xiaojinzi.bean.MessageBean;
-import com.xiaojinzi.socket.NetworkWebSocket;
 import org.json.JSONObject;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -21,6 +21,12 @@ public class NetworkLogController {
     private static Gson g = new Gson();
 
     private static Set<String> tags = Collections.synchronizedSet(new HashSet<>());
+
+    @GetMapping("test")
+    @ResponseBody
+    public String test() {
+        return "hello world";
+    }
 
     /**
      * 接受请求发送到浏览器
@@ -42,7 +48,7 @@ public class NetworkLogController {
             tags.add(selfTag);
             sendTagToClient();
         }
-        NetworkWebSocket.sendMessage(targetTag, jb.toString());
+        // NetworkWebSocket.sendMessage(targetTag, jb.toString());
         return "hello ios";
     }
 
@@ -51,7 +57,7 @@ public class NetworkLogController {
         messageBean.setAction("deviceList");
         messageBean.setData(tags);
         String json = g.toJson(messageBean);
-        NetworkWebSocket.sendMessage(null, json);
+        // NetworkWebSocket.sendMessage(null, json);
     }
 
     /**
