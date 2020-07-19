@@ -29,6 +29,8 @@ public class MessageBean<T> {
 
     public static final String TAG_FLAG = "tag";
 
+    public static final String HEARTBEAT_FLAG = "heartbeat";
+
     // 表示自身的tag
     private String selfTag;
 
@@ -51,6 +53,12 @@ public class MessageBean<T> {
         MessageBean result = new MessageBean();
         result.setAction(TAG_FLAG);
         result.setData(tag);
+        return result;
+    }
+
+    public static MessageBean heartbeatBuild() {
+        MessageBean result = new MessageBean();
+        result.setAction(HEARTBEAT_FLAG);
         return result;
     }
 

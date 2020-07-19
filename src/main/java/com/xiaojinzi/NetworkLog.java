@@ -13,13 +13,39 @@ import java.util.stream.Collectors;
 /**
  * 核心类
  */
-public class NetworkLog {
+public class NetworkLog implements Runnable {
 
     private static NetworkLog instance = new NetworkLog();
 
     private final Gson g = new Gson();
 
     private NetworkLog() {
+        // 心跳数据
+        new Thread(this).start();
+    }
+
+    /**
+     * 用于发送心跳包
+     */
+    @Override
+    public void run() {
+        executorService.submit((Runnable) () -> {
+            MessageBean messageBean = MessageBean.heartbeatBuild();
+            String heartbeat = g.toJson(messageBean);
+            while (true) {
+                try {
+                    Thread.sleep(5000);
+                    for (NetworkProvider provider : providers) {
+                        provider.send(heartbeat);
+                    }
+                    for (NetworkCustomer consumer : consumers) {
+                        consumer.send(heartbeat);
+                    }
+                } catch (Exception ignore) {
+                    // ignore
+                }
+            }
+        });
     }
 
     /**

@@ -104,4 +104,24 @@ public class WebSocketProvider implements NetworkProvider {
     public String getCombineDeviceName() {
         return getTag() + "_" + getDeviceName();
     }
+
+    @Override
+    public void send(String data) {
+        if (mSession == null) {
+            return;
+        }
+        try {
+            mSession.getBasicRemote().sendText(data);
+        } catch (Exception e){
+            destroy();
+        }
+    }
+
+    private void destroy(){
+        if (mSession != null) {
+            sessions.remove(mSession);
+        }
+        NetworkLog.getInstance().removeProvider(this);
+    }
+
 }

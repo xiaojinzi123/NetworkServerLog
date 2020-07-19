@@ -17,4 +17,9 @@ public interface NetworkProvider {
      */
     String getCombineDeviceName();
 
+    /**
+     * 发送数据
+     */
+    void send(String data);
+
 }

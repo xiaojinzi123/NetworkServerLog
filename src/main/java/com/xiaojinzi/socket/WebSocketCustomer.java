@@ -54,10 +54,7 @@ public class WebSocketCustomer implements NetworkCustomer {
      */
     @OnClose
     public synchronized void onClose() {
-        if (mSession != null) {
-            sessions.remove(mSession);
-        }
-        NetworkLog.getInstance().removeCustomer(this);
+        destroy();
     }
 
     @Override
@@ -68,8 +65,15 @@ public class WebSocketCustomer implements NetworkCustomer {
         try {
             mSession.getBasicRemote().sendText(data);
         } catch (Exception e) {
-            // ignore
+            destroy();
         }
+    }
+
+    private void destroy(){
+        if (mSession != null) {
+            sessions.remove(mSession);
+        }
+        NetworkLog.getInstance().removeCustomer(this);
     }
 
 }
