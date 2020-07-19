@@ -1,11 +1,5 @@
 package com.xiaojinzi.bean;
 
-/**
- * app 和 web 通信的格式,服务器通过其中"targetAppTag"和"targetWebTag"找出目标设备,发送过去
- * time   : 2018/05/20
- *
- * @author : xiaojinzi 30212
- */
 public class MessageBean<T> {
 
     /**
@@ -19,26 +13,22 @@ public class MessageBean<T> {
     public static final String ACTION_FLAG = "action";
 
     /**
-     * 目标的key
-     */
-    public static final String TARRGET_FLAG = "targetTag";
-
-    /**
      * 自身的tag的key
      */
     public static final String SELF_FLAG = "selfTag";
 
     /**
-     * 针对的是socket连接的客户端,不是指的是web端
+     * 设备列表 key
      */
-    public static final String TARRGET_ALL = "allTarget";
-    public static final String TARRGET_SERVER = "serverTarget";
+    public static final String DEVICES_FLAG = "deviceList";
 
-    // 表示弹出一个信息的确定框
-    public static final String ACTON_ADD_DEVICE = "addDeviceTag";
+    /**
+     * 设置设备名称的 key
+     */
+    public static final String DEVICE_NAME_FLAG = "deviceName";
 
-    // 表示其他端发送给哪一端
-    private String targetTag;
+    public static final String TAG_FLAG = "tag";
+
     // 表示自身的tag
     private String selfTag;
 
@@ -51,19 +41,17 @@ public class MessageBean<T> {
     public MessageBean() {
     }
 
-    public MessageBean(String targetTag, String selfTag, String action, T data) {
-        this.targetTag = targetTag;
+    public MessageBean(String selfTag, String action, T data) {
         this.selfTag = selfTag;
         this.action = action;
         this.data = data;
     }
 
-    public String getTargetTag() {
-        return targetTag;
-    }
-
-    public void setTargetTag(String targetTag) {
-        this.targetTag = targetTag;
+    public static MessageBean tagBuild(String tag) {
+        MessageBean result = new MessageBean();
+        result.setAction(TAG_FLAG);
+        result.setData(tag);
+        return result;
     }
 
     public String getSelfTag() {

@@ -2,13 +2,10 @@ package com.xiaojinzi.controller;
 
 
 import com.google.gson.Gson;
+import com.xiaojinzi.NetworkLog;
 import com.xiaojinzi.bean.MessageBean;
-import org.json.JSONObject;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -20,60 +17,28 @@ public class NetworkLogController {
 
     private static Gson g = new Gson();
 
-    private static Set<String> tags = Collections.synchronizedSet(new HashSet<>());
-
-    @GetMapping("test")
-    @ResponseBody
-    public String test() {
-        return "hello world";
-    }
-
     /**
-     * 接受请求发送到浏览器
-     *
-     * @param data
+     * 接受请求发送到浏览器, 但是仅用于测试
      */
     @PostMapping("log")
     @ResponseBody
-    public String log(String data) {
-        if (data == null) {
+    public String log(@RequestParam("tag") String tag,
+                      @RequestParam("data") String data) {
+        if (tag == null || tag.length() == 0) {
             throw new NullPointerException("data is null");
         }
-        JSONObject jb = new JSONObject(data);
-        // 获取自身的tag和目标的tag
-        String selfTag = jb.optString(MessageBean.SELF_FLAG);
-        String targetTag = jb.optString(MessageBean.TARRGET_FLAG);
-        // 有去重的功能
-        if (selfTag != null && !selfTag.isEmpty()) {
-            tags.add(selfTag);
-            sendTagToClient();
+        if (data == null || data.length() == 0) {
+            throw new NullPointerException("data is null");
         }
-        // NetworkWebSocket.sendMessage(targetTag, jb.toString());
-        return "hello ios";
-    }
-
-    public static void sendTagToClient() {
-        MessageBean messageBean = new MessageBean();
-        messageBean.setAction("deviceList");
-        messageBean.setData(tags);
-        String json = g.toJson(messageBean);
-        // NetworkWebSocket.sendMessage(null, json);
-    }
-
-    /**
-     * 清空tags
-     *
-     * @return
-     */
-    @RequestMapping("clearTag")
-    @ResponseBody
-    public String clearTag() {
-
-        tags.clear();
-        sendTagToClient();
-
-        return "hello ios";
-
+        MessageBean messageBean = g.fromJson(data, MessageBean.class);
+        String deviceName = NetworkLog.getInstance().getCombineDeviceName(tag);
+        if (deviceName == null) {
+            return "fail";
+        } else {
+            messageBean.setSelfTag(deviceName);
+            NetworkLog.getInstance().sendNetworkLog(messageBean);
+            return "success";
+        }
     }
 
 }
